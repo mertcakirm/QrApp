@@ -1,0 +1,20 @@
+.modern-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.modern-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+}
+
+.card-img-top {
+    height: 180px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.modern-card:hover .card-img-top {
+    transform: scale(1.05);
+}
