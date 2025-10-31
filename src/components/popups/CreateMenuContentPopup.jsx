@@ -42,7 +42,6 @@ export default function MenuContentModal({ show, onClose }) {
 
     const handleSubmit = () => {
         if (!menuContent.name || !menuContent.description || !menuContent.base64Image) {
-            alert("Tüm alanları doldurun!");
             return;
         }
         setMenuContent({ name: "", description: "", base64Image: "", variants: [] });

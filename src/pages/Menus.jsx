@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./css/Menus.css"; // Modern hover ve kart CSS
+import "./css/Menus.css";
+import {useParams} from "react-router-dom";
 
 export default function Menus() {
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { name } = useParams();
+
+    const decodedName = decodeURIComponent(name.replace(/-/g, " "));
 
     useEffect(() => {
         const sampleData = [
@@ -50,8 +54,10 @@ export default function Menus() {
 
     if (loading) {
         return (
-            <div className="d-flex justify-content-center align-items-center vh-100 text-light bg-dark">
-                <h3>Yükleniyor...</h3>
+            <div style={{height:'100vh'}} className="d-flex justify-content-center align-items-center">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
             </div>
         );
     }
@@ -59,7 +65,7 @@ export default function Menus() {
     return (
         <div className="min-vh-100 bg-dark text-light py-5">
             <div className="container">
-                <h2 className="mb-5">Şirket Menüleri</h2>
+                <h2 className="mb-5 text-center">{decodedName}</h2>
                 <div className="row g-4">
                     {menus.map((menu) => (
                         <div key={menu.id} className="col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">

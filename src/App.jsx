@@ -18,7 +18,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />}></Route>
                 <Route path="/menu-content" element={<MenuContents />}></Route>
                 <Route path="/menu-content-list" element={<MenuContentsList />}></Route>
-                <Route path="/menus" element={<Menus />}></Route>
+                <Route path="/menus/:name" element={<Menus />}></Route>
             </Routes>
         </BrowserRouter>
     </>

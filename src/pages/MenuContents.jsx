@@ -16,10 +16,8 @@ export default function MenuContents({ menuId }) {
     const [showModal, setShowModal] = useState(false);
 
     const handleDeleteContent = (index) => {
-        if (window.confirm("Bu içeriği silmek istediğinize emin misiniz?")) {
             const newContents = contents.filter((_, i) => i !== index);
             setContents(newContents);
-        }
     };
 
     return (

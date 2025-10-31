@@ -16,7 +16,7 @@ export default function Dashboard() {
     const [showModal, setShowModal] = useState(false);
 
     const handleMenuClick = (menu) => {
-        alert(`Menü seçildi: ${menu.title}`);
+        console.log(menu)
         window.location.href = "/menu-content";
     };
 

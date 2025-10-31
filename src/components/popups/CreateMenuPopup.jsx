@@ -22,7 +22,6 @@ export default function CreateMenuPopup({ show, onClose }) {
 
     const handleCreate = () => {
         if (!menu.title || !menu.description || !menu.base64Image) {
-            alert("Lütfen tüm alanları doldurun ve bir resim seçin!");
             return;
         }
         setMenu({ title: "", description: "", base64Image: "" });

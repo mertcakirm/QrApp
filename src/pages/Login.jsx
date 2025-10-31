@@ -26,12 +26,12 @@ export default function Login() {
                         <h2 className="fw-bold text-light mb-4 animate__animated animate__fadeInDown">
                             QRApp Giriş
                         </h2>
-                        <p className="text-secondary mb-4 animate__animated animate__fadeInUp">
+                        <p className="text-secondary mb-4">
                             Hesabınıza giriş yapın veya yeni bir hesap oluşturun.
                         </p>
 
                         <form>
-                            <div className="mb-3 animate__animated animate__fadeInLeft">
+                            <div className="mb-3 ">
                                 <label htmlFor="email" className="form-label text-light">
                                     Email
                                 </label>
@@ -43,7 +43,7 @@ export default function Login() {
                                 />
                             </div>
 
-                            <div className="mb-3 animate__animated animate__fadeInRight">
+                            <div className="mb-3">
                                 <label htmlFor="password" className="form-label text-light">
                                     Şifre
                                 </label>
@@ -63,7 +63,7 @@ export default function Login() {
                             </button>
                         </form>
 
-                        <p className="text-center text-secondary mt-4 animate__animated animate__fadeInUp">
+                        <p className="text-center text-secondary mt-4">
                             Hesabınız yok mu?{" "}
                             <a href="#footer" className="text-info text-decoration-none">
                                 Kayıt Ol
