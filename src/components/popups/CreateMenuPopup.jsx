@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { CreateNewMenuRequest } from "../../api/menuApi.js";
+import {base64Convert} from "../../helpers/base64Convert.js";
 
 export default function CreateMenuPopup({ show, onClose }) {
     const [menu, setMenu] = useState({
@@ -6,25 +8,33 @@ export default function CreateMenuPopup({ show, onClose }) {
         description: "",
         base64Image: "",
     });
+    const [loading, setLoading] = useState(false);
 
     if (!show) return null;
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setMenu({ ...menu, base64Image: reader.result });
-            };
-            reader.readAsDataURL(file);
+            const base64 = await base64Convert(file);
+            setMenu({ ...menu, base64Image: base64 });
         }
     };
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
         if (!menu.title || !menu.description || !menu.base64Image) {
             return;
         }
-        setMenu({ title: "", description: "", base64Image: "" });
+
+        try {
+            setLoading(true);
+            await CreateNewMenuRequest(menu);
+            setMenu({ title: "", description: "", base64Image: "" });
+            onClose();
+        } catch (error) {
+            console.error("Menü oluşturulamadı:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -63,8 +73,12 @@ export default function CreateMenuPopup({ show, onClose }) {
                         <button className="btn btn-secondary" onClick={onClose}>
                             İptal
                         </button>
-                        <button className="btn btn-primary" onClick={handleCreate}>
-                            Oluştur
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleCreate}
+                            disabled={loading}
+                        >
+                            {loading ? "Oluşturuluyor..." : "Oluştur"}
                         </button>
                     </div>
                 </div>

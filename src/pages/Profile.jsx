@@ -1,26 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminNavbar from "../components/AdminNavbar.jsx";
+import QrPopup from "../components/popups/QrPopup.jsx";
+import { GetMeRequest } from "../api/UserApi.js";
 
 const Profile = () => {
     const [logo, setLogo] = useState(null);
-    const [businessName, setBusinessName] = useState("Örnek İşletme");
-    const [email, setEmail] = useState("ornek@isletme.com");
-    const [phone, setPhone] = useState("05321234567");
+    const [showPopup, setShowPopup] = useState(false);
+    const [businessName, setBusinessName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await GetMeRequest();
+                const data = res.data;
+
+                setBusinessName(data.company?.name || "");
+                setEmail(data.company?.email || "");
+                setPhone(data.company?.phone || "");
+                setLogo(data.company?.base64Image || null);
+            } catch (err) {
+                console.error("Profil verisi alınamadı:", err);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleLogoChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setLogo(URL.createObjectURL(file)); // önizleme
+            setLogo(URL.createObjectURL(file));
         }
     };
 
-    const handleProfileUpdate = (e) => {
-        e.preventDefault();
-
+    const handleProfileUpdate = () => {
         if (password && password !== confirmPassword) {
+            alert("Şifreler eşleşmiyor!");
             return;
         }
 
@@ -32,10 +52,7 @@ const Profile = () => {
         };
 
         console.log("Güncellenen veriler:", updatedData);
-
     };
-
-    const handleGenerateQR = () => { };
 
     return (
         <div className="container-fluid p-0 m-0 text-light bg-dark vh-100 overflow-hidden">
@@ -66,7 +83,7 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        <form onSubmit={handleProfileUpdate}>
+                        <div>
                             <div className="mb-3">
                                 <label className="form-label">İşletme Adı</label>
                                 <input
@@ -127,23 +144,24 @@ const Profile = () => {
                                 />
                             </div>
 
-
                             <div className="d-flex justify-content-between mt-4">
-                                <button type="submit" className="btn btn-success px-4">
+                                <button onClick={handleProfileUpdate} className="btn btn-success px-4">
                                     Bilgileri Güncelle
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={handleGenerateQR}
+                                    onClick={() => setShowPopup(true)}
                                     className="btn btn-warning px-4"
                                 >
                                     QR Kod Oluştur
                                 </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            {showPopup && <QrPopup onClose={() => setShowPopup(false)} companyName={businessName} />}
         </div>
     );
 };

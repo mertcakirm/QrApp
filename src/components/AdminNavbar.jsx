@@ -10,7 +10,6 @@ const AdminNavbar = () => {
     };
 
     const handleLogout = () => {
-        alert("Çıkış yapılıyor...");
         navigate("/login");
     };
 

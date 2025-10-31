@@ -1,14 +1,17 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import {CreateNewMenuItemRequest} from "../../api/MenuApi.js";
 
-export default function MenuContentModal({ show, onClose }) {
+export default function MenuContentModal({ show, onClose, refreshContents }) {
+    const { id: menuId } = useParams(); // URL'den menuId al
     const [menuContent, setMenuContent] = useState({
         name: "",
         description: "",
         base64Image: "",
         variants: [],
     });
-
     const [variant, setVariant] = useState({ name: "", price: "" });
+    const [loading, setLoading] = useState(false);
 
     if (!show) return null;
 
@@ -40,11 +43,29 @@ export default function MenuContentModal({ show, onClose }) {
         setMenuContent({ ...menuContent, variants: newVariants });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!menuContent.name || !menuContent.description || !menuContent.base64Image) {
             return;
         }
-        setMenuContent({ name: "", description: "", base64Image: "", variants: [] });
+
+        try {
+            setLoading(true);
+            const payload = {
+                ...menuContent,
+                menuId: Number(menuId),
+            };
+
+            await CreateNewMenuItemRequest(payload);
+
+            setMenuContent({ name: "", description: "", base64Image: "", variants: [] });
+            if (refreshContents) refreshContents();
+
+            onClose();
+        } catch (error) {
+            console.error("Menü içeriği eklenemedi:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -53,12 +74,12 @@ export default function MenuContentModal({ show, onClose }) {
             style={{ backdropFilter: "blur(4px)" }}
         >
             <div className="modal-dialog  d-flex justify-content-center align-items-center w-100 h-75">
-                <div className="modal-content bg-dark text-light rounded-4 p-4">
+                <div className="modal-content bg-dark text-dark rounded-4 p-4">
                     <h5 className="modal-title mb-3">Yeni İçerik Ekle</h5>
 
                     <input
                         type="text"
-                        className="form-control mb-3 text-light border-0"
+                        className="form-control mb-3 text-dark border-0"
                         placeholder="İçerik Adı"
                         value={menuContent.name}
                         onChange={(e) =>
@@ -67,7 +88,7 @@ export default function MenuContentModal({ show, onClose }) {
                     />
 
                     <textarea
-                        className="form-control mb-3 text-light border-0"
+                        className="form-control mb-3 text-dark border-0"
                         placeholder="Açıklama"
                         value={menuContent.description}
                         onChange={(e) =>
@@ -95,7 +116,6 @@ export default function MenuContentModal({ show, onClose }) {
                                 <option value="S">Küçük</option>
                                 <option value="M">Orta</option>
                                 <option value="L">Büyük</option>
-
                             </select>
 
                             <input
@@ -137,8 +157,12 @@ export default function MenuContentModal({ show, onClose }) {
                         <button className="btn btn-secondary" onClick={onClose}>
                             İptal
                         </button>
-                        <button className="btn btn-primary" onClick={handleSubmit}>
-                            Kaydet
+                        <button
+                            className="btn btn-primary"
+                            onClick={handleSubmit}
+                            disabled={loading}
+                        >
+                            {loading ? "Kaydediliyor..." : "Kaydet"}
                         </button>
                     </div>
                 </div>
