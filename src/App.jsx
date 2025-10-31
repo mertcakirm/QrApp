@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import MenuContents from "./pages/MenuContents.jsx";
 import Menus from "./pages/Menus.jsx";
 import MenuContentsList from "./pages/MenuContentsList.jsx";
+import Profile from "./pages/Profile.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 function App() {
 
@@ -15,6 +17,8 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home />}></Route>
                 <Route path="/login" element={<Login />}></Route>
+                <Route path="/profile" element={<Profile />}></Route>
+                <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
                 <Route path="/dashboard" element={<Dashboard />}></Route>
                 <Route path="/menu-content" element={<MenuContents />}></Route>
                 <Route path="/menu-content-list" element={<MenuContentsList />}></Route>
