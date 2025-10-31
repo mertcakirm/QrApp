@@ -21,7 +21,7 @@ function App() {
                 <Route path="/admin-dashboard" element={<AdminDashboard />}></Route>
                 <Route path="/dashboard" element={<Dashboard />}></Route>
                 <Route path="/menu-content/:id" element={<MenuContents />}></Route>
-                <Route path="/menu-content-list" element={<MenuContentsList />}></Route>
+                <Route path="/menu-content-list/:id" element={<MenuContentsList />}></Route>
                 <Route path="/menus/:name" element={<Menus />}></Route>
             </Routes>
         </BrowserRouter>

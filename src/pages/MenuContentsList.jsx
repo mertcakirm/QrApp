@@ -1,46 +1,39 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/MenuContents.css";
-import {IoIosArrowBack} from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
+import {useNavigate, useParams} from "react-router-dom";
+import {GetMenuItemsRequest} from "../api/MenuApi.js";
 
-export default function MenuContentsList({ menuId }) {
+export default function MenuContentsList() {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+    const { id } = useParams();
+
+    const fetchContents = async () => {
+        try {
+            console.log(id)
+            const response = await GetMenuItemsRequest(id);
+            setContents(response.data);
+        } catch (error) {
+            console.error("Menü içerikleri alınamadı:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const goBack = () => {
+        navigate(-1);
+    };
 
     useEffect(() => {
-        const sampleData = [
-            {
-                id: 1,
-                name: "Omlet",
-                description: "Lezzetli kahvaltılık",
-                base64Image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=400&h=250",
-                variants: [
-                    { id: 1, name: "Küçük", price: 50 },
-                    { id: 2, name: "Orta", price: 70 },
-                    { id: 3, name: "Büyük", price: 90 },
-                ],
-            },
-            {
-                id: 2,
-                name: "Pancake",
-                description: "Tatlı ve yumuşak pancake, içerik detayları ve diğer bilgiler burada görünecek.",
-                base64Image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=400&h=250",
-                variants: [
-                    { id: 1, name: "Küçük", price: 40 },
-                    { id: 2, name: "Orta", price: 60 },
-                ],
-            },
-        ];
-
-        setTimeout(() => {
-            setContents(sampleData);
-            setLoading(false);
-        }, 1000);
-    }, [menuId]);
+        fetchContents();
+    }, [id]);
 
     if (loading) {
         return (
-            <div style={{height:'100vh'}} className="d-flex justify-content-center align-items-center">
+            <div style={{ height: "100vh" }} className="d-flex justify-content-center align-items-center">
                 <div className="spinner-border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </div>
@@ -56,15 +49,13 @@ export default function MenuContentsList({ menuId }) {
                 className="menu-bg-img"
             />
 
-            <a
-                href="/menus"
+            <button
+                onClick={goBack}
                 className="btn bg-transparent text-light fs-4 position-absolute top-0 start-0 m-3 shadow d-flex align-items-center justify-content-center"
             >
                 <IoIosArrowBack color="white" size={30} />
-                <div>
-                    Menülere Dön
-                </div>
-            </a>
+                <div>Menülere Dön</div>
+            </button>
 
             <div className="container position-relative">
                 <h2 className="mb-5 mt-3 text-center">Menü İçerikleri</h2>
