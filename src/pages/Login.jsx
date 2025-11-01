@@ -39,7 +39,6 @@ export default function Login() {
             }
         } catch (err) {
             console.error("Giriş hatası:", err);
-            alert("Email veya şifre hatalı!");
         } finally {
             setLoading(false);
         }

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminNavbar from "../components/AdminNavbar.jsx";
 import QrPopup from "../components/popups/QrPopup.jsx";
-import { GetMeRequest } from "../api/UserApi.js";
+import { GetMeRequest, UpdateProfilePhotoRequest, UpdateCompanyRequest } from "../api/UserApi.js";
+import PasswordChangePopup from "../components/popups/PasswordChangePopup.jsx";
+import { base64Convert } from "../helpers/base64Convert.js";
 
 const Profile = () => {
     const [logo, setLogo] = useState(null);
@@ -10,49 +12,58 @@ const Profile = () => {
     const [businessName, setBusinessName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [address, setAddress] = useState("");
+    const [showPasswordPopup, setShowPasswordPopup] = useState(false);
+    const [refresh, setRefresh] = useState(false);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await GetMeRequest();
-                const data = res.data;
+    const fetchProfile = async () => {
+        try {
+            const res = await GetMeRequest();
+            const data = res.data;
 
-                setBusinessName(data.company?.name || "");
-                setEmail(data.company?.email || "");
-                setPhone(data.company?.phone || "");
-                setLogo(data.company?.base64Image || null);
-            } catch (err) {
-                console.error("Profil verisi alınamadı:", err);
-            }
-        };
-
-        fetchProfile();
-    }, []);
-
-    const handleLogoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setLogo(URL.createObjectURL(file));
+            setBusinessName(data.company?.name || "");
+            setEmail(data.company?.email || "");
+            setPhone(data.company?.phone || "");
+            setLogo(data.company?.base64Image || null);
+            setAddress(data.company?.address || "");
+        } catch (err) {
+            console.error("Profil verisi alınamadı:", err);
         }
     };
 
-    const handleProfileUpdate = () => {
-        if (password && password !== confirmPassword) {
-            alert("Şifreler eşleşmiyor!");
-            return;
-        }
+    const handleLogoChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        try {
+            setLogo(URL.createObjectURL(file));
+            const base64String = await base64Convert(file);
+            await UpdateProfilePhotoRequest(base64String);
+            setRefresh(!refresh);
+        } catch (err) {
+            console.error("Logo güncellenirken hata:", err);
+        }
+    };
+
+    const handleProfileUpdate = async () => {
         const updatedData = {
-            businessName,
+            name: businessName,
             email,
             phone,
-            password: password || undefined,
+            address,
         };
 
-        console.log("Güncellenen veriler:", updatedData);
+        try {
+            await UpdateCompanyRequest(updatedData);
+            setRefresh(!refresh);
+        } catch (err) {
+            console.error("Profil güncellenemedi:", err);
+        }
     };
+
+    useEffect(() => {
+        fetchProfile();
+    }, [refresh]);
 
     return (
         <div className="container-fluid p-0 m-0 text-light bg-dark vh-100 overflow-hidden">
@@ -120,33 +131,30 @@ const Profile = () => {
                                 />
                             </div>
 
+                            <div className="mb-3">
+                                <label className="form-label">Adres</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    placeholder="Adresinizi girin"
+                                    required
+                                />
+                            </div>
+
                             <hr className="border-light" />
-
-                            <div className="mb-3">
-                                <label className="form-label">Yeni Şifre</label>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Yeni şifrenizi girin"
-                                />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Yeni Şifre (Tekrar)</label>
-                                <input
-                                    type="password"
-                                    className="form-control"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="Şifreyi tekrar girin"
-                                />
-                            </div>
 
                             <div className="d-flex justify-content-between mt-4">
                                 <button onClick={handleProfileUpdate} className="btn btn-success px-4">
                                     Bilgileri Güncelle
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPasswordPopup(true)}
+                                    className="btn btn-dark px-4"
+                                >
+                                    Şifre Değiştir
                                 </button>
                                 <button
                                     type="button"
@@ -160,8 +168,16 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-
-            {showPopup && <QrPopup onClose={() => setShowPopup(false)} companyName={businessName} />}
+            {showPasswordPopup && (
+                <PasswordChangePopup onClose={(b) => {
+                    if (b === false) setShowPasswordPopup(false);
+                }} />
+            )}
+            {showPopup && (
+                <QrPopup onClose={(b) => {
+                    if (b === false) setShowPopup(false);
+                }} companyName={businessName} />
+            )}
         </div>
     );
 };

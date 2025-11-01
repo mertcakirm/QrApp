@@ -69,7 +69,7 @@ const QrPopup = ({ onClose , companyName}) => {
                     )}
 
                     <div className="d-flex justify-content-end mt-3">
-                        <button className="btn btn-secondary" onClick={onClose}>
+                        <button className="btn btn-secondary" onClick={()=> onClose(false)}>
                             Kapat
                         </button>
                     </div>

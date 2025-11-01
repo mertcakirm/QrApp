@@ -15,3 +15,19 @@ export const AddUserRequest = async (user) => {
 export const DeleteUserRequest = async (id) => {
     return await api.delete(`/users/${id}`);
 }
+
+export const UpdateProfilePhotoRequest = async (base64Image) => {
+    return await api.put("/users/photo", base64Image, {
+        headers: {
+            "Content-Type": "text/plain"
+        }
+    });
+};
+
+export const UpdateCompanyRequest = async (companyData) => {
+    return await api.put("/users/update/company", companyData);
+};
+
+export const ChangePasswordRequest = async (passwordDto) => {
+    return await api.put("/users/change-password", passwordDto);
+};

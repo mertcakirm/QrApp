@@ -15,7 +15,6 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
     });
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
 
     const handleLogoChange = async (e) => {
         const file = e.target.files[0];
@@ -31,7 +30,6 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
 
     const handleAddUser = async () => {
         if (!newUser.name || !newUser.email || !newUser.password || !newUser.companyName) {
-            setError("Lütfen tüm zorunlu alanları doldurun!");
             return;
         }
 
@@ -65,7 +63,6 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
             onClose(false);
         } catch (err) {
             console.error(err);
-            setError("Kullanıcı eklenirken hata oluştu!");
         } finally {
             setLoading(false);
         }
@@ -79,7 +76,6 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
             <div className="card bg-secondary text-light p-4 rounded-4 shadow-lg" style={{ width: "450px" }}>
                 <h5 className="text-center mb-3">Yeni Kullanıcı Ekle</h5>
 
-                {error && <div className="alert alert-danger">{error}</div>}
 
                 <input
                     type="text"
