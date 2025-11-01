@@ -5,6 +5,7 @@ import QrPopup from "../components/popups/QrPopup.jsx";
 import { GetMeRequest, UpdateProfilePhotoRequest, UpdateCompanyRequest } from "../api/UserApi.js";
 import PasswordChangePopup from "../components/popups/PasswordChangePopup.jsx";
 import { base64Convert } from "../helpers/base64Convert.js";
+import {toast} from "react-toastify";
 
 const Profile = () => {
     const [logo, setLogo] = useState(null);
@@ -39,9 +40,12 @@ const Profile = () => {
             setLogo(URL.createObjectURL(file));
             const base64String = await base64Convert(file);
             await UpdateProfilePhotoRequest(base64String);
+            toast.success("Logo başarıyla değiştirildi!");
             setRefresh(!refresh);
         } catch (err) {
             console.error("Logo güncellenirken hata:", err);
+            toast.error("Logo değiştirilirken bir hata oluştu!");
+
         }
     };
 
@@ -55,9 +59,11 @@ const Profile = () => {
 
         try {
             await UpdateCompanyRequest(updatedData);
+            toast.success("Bilgiler başarıyla değiştirildi!");
             setRefresh(!refresh);
         } catch (err) {
             console.error("Profil güncellenemedi:", err);
+            toast.error("Bilgiler değiştirilirken bir hata oluştu!");
         }
     };
 
@@ -70,7 +76,7 @@ const Profile = () => {
             <AdminNavbar />
             <div className="row mt-5 justify-content-center">
                 <div className="col-md-8 col-lg-6">
-                    <div className="card bg-secondary text-light p-4 rounded-4 shadow-lg">
+                    <div className="card bg-secondary p-4 rounded-4 shadow-lg">
                         <h3 className="text-center mb-4">İşletme Profilim</h3>
 
                         <div className="text-center mb-4">

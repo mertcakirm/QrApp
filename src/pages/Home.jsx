@@ -10,7 +10,6 @@ export default function Home() {
     const [menus, setMenus] = useState(0);
     const [qrGenerated, setQrGenerated] = useState(0);
 
-    // Sayaç animasyonu
     useEffect(() => {
         let userInterval = setInterval(() => {
             setUsers((prev) => (prev < 1500 ? prev + 50 : prev));
@@ -33,12 +32,9 @@ export default function Home() {
 
 
     return (
-        <div style={{ backgroundColor: "#0d1117", color: "#fff" }}>
-            {/* Hero Section */}
+        <div style={{ backgroundColor: "#0d1117", color: "#fff",overflow: "hidden" }}>
             {/* HERO SECTION */}
-            {/* HERO SECTION */}
-            <section className="position-relative text-center">
-                {/* Resim */}
+            <section className="position-relative text-center" data-aos="fade-up">
                 <img
                     src={header}
                     alt="QRApp Hero"
@@ -46,7 +42,6 @@ export default function Home() {
                     style={{ height: "700px", objectFit: "cover" }}
                 />
 
-                {/* Overlay metin ve buton */}
                 <div
                     className="position-absolute top-50 start-50 translate-middle text-light"
                     style={{ zIndex: 2 }}
@@ -62,7 +57,6 @@ export default function Home() {
                     </a>
                 </div>
 
-                {/* Opsiyonel koyu overlay */}
                 <div
                     className="position-absolute top-0 start-0 w-100 h-100"
                     style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1 }}
@@ -91,7 +85,7 @@ export default function Home() {
             </section>
 
             {/* Özellikler */}
-            <section className="py-5 bg-dark text-center">
+            <section className="py-5 bg-dark text-center" data-aos="fade-up">
                 <div className="container">
                     <h2 className="fw-bold mb-5 animate__animated animate__fadeInDown">Özellikler</h2>
                     <div className="row g-4">
@@ -118,7 +112,7 @@ export default function Home() {
             </section>
 
             {/* İstatistikler */}
-            <section className="py-5 text-center">
+            <section className="py-5 text-center" data-aos="fade-up">
                 <div className="container">
                     <h2 className="fw-bold mb-5 animate__animated animate__fadeInUp">QRApp İstatistikleri</h2>
                     <div className="row">

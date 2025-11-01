@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AddUserRequest } from "../../api/UserApi.js";
-import {base64Convert} from "../../helpers/base64Convert.js";
+import { base64Convert } from "../../helpers/base64Convert.js";
+import { toast } from "react-toastify";
 
 const CreateUserPopup = ({ onClose, onUserAdded }) => {
     const [newUser, setNewUser] = useState({
@@ -24,12 +25,14 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
                 setNewUser({ ...newUser, companyBase64Image: base64 });
             } catch (err) {
                 console.error("Logo dönüştürülürken hata:", err);
+                toast.error("Logo yüklenirken bir hata oluştu!");
             }
         }
     };
 
     const handleAddUser = async () => {
         if (!newUser.name || !newUser.email || !newUser.password || !newUser.companyName) {
+            toast.warning("Lütfen tüm zorunlu alanları doldurun!");
             return;
         }
 
@@ -49,6 +52,7 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
         try {
             setLoading(true);
             await AddUserRequest(payload);
+            toast.success("Kullanıcı başarıyla eklendi!");
             setNewUser({
                 name: "",
                 email: "",
@@ -63,6 +67,7 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
             onClose(false);
         } catch (err) {
             console.error(err);
+            toast.error("Kullanıcı eklenirken bir hata oluştu!");
         } finally {
             setLoading(false);
         }
@@ -75,7 +80,6 @@ const CreateUserPopup = ({ onClose, onUserAdded }) => {
         >
             <div className="card bg-secondary text-light p-4 rounded-4 shadow-lg" style={{ width: "450px" }}>
                 <h5 className="text-center mb-3">Yeni Kullanıcı Ekle</h5>
-
 
                 <input
                     type="text"

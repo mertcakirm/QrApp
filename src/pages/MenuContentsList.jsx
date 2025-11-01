@@ -45,7 +45,7 @@ export default function MenuContentsList() {
     }
 
     return (
-        <div className="position-relative min-vh-100 text-light py-5">
+        <div className="position-relative overflow-hidden min-vh-100 text-light py-5">
             <img
                 src={background}
                 alt="Arkaplan"
@@ -61,12 +61,12 @@ export default function MenuContentsList() {
             </button>
 
             <div className="container position-relative">
-                <h2 className="mb-5 mt-3 text-center">{title.toUpperCase()}</h2>
+                <h2 className="mb-5 mt-3 text-center" data-aos="fade-down">{title.toUpperCase()}</h2>
                 <div className="row g-4">
                     {contents.length > 0 ? (
                         contents.map((content) => (
                             <div key={content.id} className="col-sm-6 col-md-4 col-lg-3">
-                                <div className="card content-card shadow-lg overflow-hidden rounded-4 bg-dark bg-opacity-75 text-light">
+                                <div className="card content-card shadow-lg overflow-hidden rounded-4 bg-dark bg-opacity-75 text-light" data-aos="fade-up">
                                     {content.base64Image && (
                                         <img
                                             src={content.base64Image}

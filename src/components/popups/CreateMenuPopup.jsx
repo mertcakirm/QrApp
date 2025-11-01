@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { CreateNewMenuRequest } from "../../api/menuApi.js";
-import {base64Convert} from "../../helpers/base64Convert.js";
+import { base64Convert } from "../../helpers/base64Convert.js";
+import { toast } from "react-toastify";
 
-export default function CreateMenuPopup({ show, onClose }) {
+export default function CreateMenuPopup({ show, onClose, refreshMenus }) {
     const [menu, setMenu] = useState({
         title: "",
         description: "",
@@ -22,16 +23,20 @@ export default function CreateMenuPopup({ show, onClose }) {
 
     const handleCreate = async () => {
         if (!menu.title || !menu.description || !menu.base64Image) {
+            toast.warning("Lütfen tüm alanları doldurun!");
             return;
         }
 
         try {
             setLoading(true);
             await CreateNewMenuRequest(menu);
+            toast.success("Menü başarıyla oluşturuldu!");
             setMenu({ title: "", description: "", base64Image: "" });
+            if (refreshMenus) refreshMenus();
             onClose();
         } catch (error) {
             console.error("Menü oluşturulamadı:", error);
+            toast.error("Menü oluşturulurken bir hata oluştu!");
         } finally {
             setLoading(false);
         }
@@ -45,18 +50,18 @@ export default function CreateMenuPopup({ show, onClose }) {
         >
             <div className="modal-dialog d-flex justify-content-center align-items-center w-100 h-75">
                 <div className="modal-content bg-dark text-light rounded-4 p-4">
-                    <h5 className="modal-title mb-3">Yeni Menü Oluştur</h5>
+                    <h5 className="modal-title mb-3 text-center">Yeni Menü Oluştur</h5>
 
                     <input
                         type="text"
-                        className="form-control mb-3 text-light border-0"
+                        className="form-control mb-3 border-0"
                         placeholder="Menü Adı"
                         value={menu.title}
                         onChange={(e) => setMenu({ ...menu, title: e.target.value })}
                     />
 
                     <textarea
-                        className="form-control mb-3 text-light border-0"
+                        className="form-control mb-3 border-0"
                         placeholder="Menü Açıklaması"
                         value={menu.description}
                         onChange={(e) => setMenu({ ...menu, description: e.target.value })}

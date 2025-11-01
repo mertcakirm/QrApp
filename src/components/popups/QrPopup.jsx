@@ -1,10 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CreateQrCodeRequest } from "../../api/QrApi.js";
+import { toast } from "react-toastify";
 
-const QrPopup = ({ onClose , companyName}) => {
+const QrPopup = ({ onClose, companyName }) => {
     const [loading, setLoading] = useState(false);
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
     const [qrBlob, setQrBlob] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            if (qrCodeUrl) {
+                URL.revokeObjectURL(qrCodeUrl);
+            }
+        };
+    }, [qrCodeUrl]);
 
     const handleGenerateQr = async () => {
         const encodedName = encodeURIComponent(companyName.replace(/ /g, "-"));
@@ -15,8 +24,10 @@ const QrPopup = ({ onClose , companyName}) => {
             const url = URL.createObjectURL(blob);
             setQrCodeUrl(url);
             setQrBlob(blob);
+            toast.success("QR Code başarıyla oluşturuldu!");
         } catch (err) {
             console.error("QR oluşturulamadı:", err);
+            toast.error("QR Code oluşturulamadı!");
         } finally {
             setLoading(false);
         }
@@ -30,6 +41,7 @@ const QrPopup = ({ onClose , companyName}) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success("QR Code başarıyla indirildi!");
     };
 
     return (
@@ -41,8 +53,6 @@ const QrPopup = ({ onClose , companyName}) => {
                 <div className="modal-content bg-dark text-light rounded-4 p-4">
                     <h5 className="modal-title mb-3">QR Code Oluştur</h5>
 
-
-
                     {qrCodeUrl ? (
                         <div className="text-center d-flex flex-column align-items-center mb-3">
                             <img
@@ -51,14 +61,11 @@ const QrPopup = ({ onClose , companyName}) => {
                                 className="img-fluid"
                                 style={{ maxWidth: "200px" }}
                             />
-                            <button
-                                className="btn btn-success mt-3"
-                                onClick={handleDownload}
-                            >
+                            <button className="btn btn-success mt-3" onClick={handleDownload}>
                                 İndir
                             </button>
                         </div>
-                    ):(
+                    ) : (
                         <button
                             className="btn btn-primary mb-3"
                             onClick={handleGenerateQr}
@@ -69,7 +76,7 @@ const QrPopup = ({ onClose , companyName}) => {
                     )}
 
                     <div className="d-flex justify-content-end mt-3">
-                        <button className="btn btn-secondary" onClick={()=> onClose(false)}>
+                        <button className="btn btn-secondary" onClick={() => onClose(false)}>
                             Kapat
                         </button>
                     </div>

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import {CreateNewMenuItemRequest} from "../../api/MenuApi.js";
+import { CreateNewMenuItemRequest } from "../../api/MenuApi.js";
+import { toast } from "react-toastify";
+import {base64Convert} from "../../helpers/base64Convert.js";
 
 export default function MenuContentModal({ show, onClose, refreshContents }) {
     const { id: menuId } = useParams(); // URL'den menuId al
@@ -15,19 +17,19 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
 
     if (!show) return null;
 
-    const handleImageChange = (e) => {
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setMenuContent({ ...menuContent, base64Image: reader.result });
-            };
-            reader.readAsDataURL(file);
+            const base64 = await base64Convert(file);
+            setMenuContent({ ...menuContent, base64Image: base64 });
         }
     };
 
     const addVariant = () => {
-        if (!variant.name || !variant.price) return;
+        if (!variant.name || !variant.price) {
+            toast.warning("Lütfen variant adı ve fiyat girin!");
+            return;
+        }
         setMenuContent({
             ...menuContent,
             variants: [
@@ -45,6 +47,7 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
 
     const handleSubmit = async () => {
         if (!menuContent.name || !menuContent.description || !menuContent.base64Image) {
+            toast.warning("Lütfen tüm alanları doldurun!");
             return;
         }
 
@@ -57,12 +60,14 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
 
             await CreateNewMenuItemRequest(payload);
 
+            toast.success("Menü içeriği başarıyla eklendi!");
             setMenuContent({ name: "", description: "", base64Image: "", variants: [] });
-            if (refreshContents) refreshContents();
 
+            if (refreshContents) refreshContents();
             onClose();
         } catch (error) {
             console.error("Menü içeriği eklenemedi:", error);
+            toast.error("Menü içeriği eklenirken bir hata oluştu!");
         } finally {
             setLoading(false);
         }
@@ -70,16 +75,16 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
 
     return (
         <div
-            className="modal show d-block bg-dark bg-opacity-75  position-fixed w-100 h-100"
+            className="modal show d-block bg-dark bg-opacity-75 position-fixed w-100 h-100"
             style={{ backdropFilter: "blur(4px)" }}
         >
-            <div className="modal-dialog  d-flex justify-content-center align-items-center w-100 h-75">
-                <div className="modal-content bg-dark text-dark rounded-4 p-4">
-                    <h5 className="modal-title mb-3">Yeni İçerik Ekle</h5>
+            <div className="modal-dialog d-flex justify-content-center align-items-center w-100 h-75">
+                <div className="modal-content bg-dark text-light rounded-4 p-4">
+                    <h5 className="modal-title mb-3 text-center">Yeni İçerik Ekle</h5>
 
                     <input
                         type="text"
-                        className="form-control mb-3 text-dark border-0"
+                        className="form-control mb-3 border-0"
                         placeholder="İçerik Adı"
                         value={menuContent.name}
                         onChange={(e) =>
@@ -88,7 +93,7 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
                     />
 
                     <textarea
-                        className="form-control mb-3 text-dark border-0"
+                        className="form-control mb-3 border-0"
                         placeholder="Açıklama"
                         value={menuContent.description}
                         onChange={(e) =>
@@ -103,7 +108,7 @@ export default function MenuContentModal({ show, onClose, refreshContents }) {
                         onChange={handleImageChange}
                     />
 
-                    {/* Variant Ekleme */}
+                    {/* Variant Ekleme Alanı */}
                     <div className="mb-3">
                         <h6>Variantlar</h6>
                         <div className="d-flex gap-2 mb-2">

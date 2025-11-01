@@ -6,6 +6,7 @@ import Footer from "../components/Footer.jsx";
 import { FaHome } from "react-icons/fa";
 import {CheckRoleRequest, LoginRequest} from "../api/AuthApi";
 import {setCookie} from "../components/cookie/Cookie.js";
+import {toast} from "react-toastify";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -16,36 +17,57 @@ export default function Login() {
         setLoading(true);
 
         try {
+            if (!email || !password) {
+                toast.warning("Lütfen e-posta ve şifre alanlarını doldurun!");
+                setLoading(false);
+                return;
+            }
+
             const loginDto = {
-                email: email,
-                password: password,
+                email,
+                password,
             };
 
             const data = await LoginRequest(loginDto);
 
-            if (data.data) {
+            if (data?.data) {
+                toast.success("Giriş başarılı!");
+
                 setCookie("token", data.data, 7);
 
                 const roleResponse = await CheckRoleRequest();
                 const role = roleResponse.data;
 
                 if (role === "ADMİN") {
-                    window.location.href = "/admin-dashboard";
+                    toast.info("Yönlendiriliyorsunuz: Admin Paneli");
+                    setTimeout(() => (window.location.href = "/admin-dashboard"), 1000);
                 } else if (role === "COMPANY") {
-                    window.location.href = "/dashboard";
+                    toast.info("Yönlendiriliyorsunuz: İşletme Paneli");
+                    setTimeout(() => (window.location.href = "/dashboard"), 1000);
                 } else {
-                    //window.location.href = "/";
+                    toast.info("Giriş başarılı! Ana sayfaya yönlendiriliyorsunuz.");
+                    setTimeout(() => (window.location.href = "/"), 1000);
                 }
+            } else {
+                toast.error("Giriş başarısız! Lütfen bilgilerinizi kontrol edin.");
             }
+
         } catch (err) {
             console.error("Giriş hatası:", err);
+
+            if (err.response && err.response.status === 401) {
+                toast.error("Geçersiz e-posta veya şifre!");
+            } else {
+                toast.error("Bir hata oluştu. Lütfen tekrar deneyin!");
+            }
+
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="container-fluid p-0 m-0">
+        <div className="container-fluid overflow-hidden p-0 m-0">
             <div className="vh-100 d-flex align-items-center justify-content-center bg-dark">
                 <div className="container">
                     <div className="row g-0 shadow-lg rounded-4 overflow-hidden">

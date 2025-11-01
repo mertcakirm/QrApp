@@ -3,7 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import CreateMenuContentPopup from "../components/popups/CreateMenuContentPopup.jsx";
 import AdminNavbar from "../components/AdminNavbar.jsx";
 import { useParams } from "react-router-dom";
-import {DeleteMenuItemRequest, GetMenuItemsRequest} from "../api/MenuApi.js";
+import { DeleteMenuItemRequest, GetMenuItemsRequest } from "../api/MenuApi.js";
+import { toast } from "react-toastify";
 
 export default function MenuContents() {
     const [contents, setContents] = useState([]);
@@ -21,6 +22,7 @@ export default function MenuContents() {
             setContents(res.data.items);
         } catch (error) {
             console.error("Menü içerikleri alınamadı:", error);
+            toast.error("Menü içerikleri alınamadı!");
         } finally {
             setLoading(false);
         }
@@ -30,15 +32,24 @@ export default function MenuContents() {
         if (id) {
             fetchMenuItems();
         }
-    }, [id,refresh]);
+    }, [id, refresh]);
 
-    const handleDeleteContent = async (id) => {
-        await DeleteMenuItemRequest(id);
-        setRefresh(!refresh);
+    const handleDeleteContent = async (itemId) => {
+        const confirmDelete = window.confirm("Bu içeriği silmek istediğinize emin misiniz?");
+        if (!confirmDelete) return;
+
+        try {
+            await DeleteMenuItemRequest(itemId);
+            toast.success("Menü içeriği başarıyla silindi!");
+            setRefresh(!refresh);
+        } catch (error) {
+            console.error("Menü içeriği silinirken hata oluştu:", error);
+            toast.error("Menü içeriği silinirken bir hata oluştu!");
+        }
     };
 
     return (
-        <div className="min-vh-100 bg-dark text-light">
+        <div className="min-vh-100 overflow-hidden bg-dark text-light">
             <AdminNavbar />
             <div className="container py-5">
                 <div className="d-flex justify-content-between align-items-center mb-4">
@@ -86,7 +97,7 @@ export default function MenuContents() {
 
                                     <div
                                         className="d-flex justify-content-end w-100 position-absolute"
-                                        style={{ right: "20px",top:'20px' }}
+                                        style={{ right: "20px", top: "20px" }}
                                     >
                                         <button
                                             className="btn btn-sm btn-danger"

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AdminNavbar from "../components/AdminNavbar.jsx";
-import {DeleteUserRequest, UsersGetAllRequest} from "../api/UserApi.js";
-import CreateUserPopup from "../components/popups/CreateUserPopup.jsx"; // 👈 API fonksiyonunu import et
+import { DeleteUserRequest, UsersGetAllRequest } from "../api/UserApi.js";
+import CreateUserPopup from "../components/popups/CreateUserPopup.jsx";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
@@ -24,14 +25,24 @@ const AdminDashboard = () => {
             }
         } catch (err) {
             console.error("Kullanıcılar alınamadı:", err);
+            toast.error("Kullanıcı listesi alınamadı!");
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id) => {
-        await DeleteUserRequest(id);
-        setRefresh(!refresh);
+        const confirmDelete = window.confirm("Bu kullanıcıyı silmek istediğinize emin misiniz?");
+        if (!confirmDelete) return;
+
+        try {
+            await DeleteUserRequest(id);
+            toast.success("Kullanıcı başarıyla silindi!");
+            setRefresh(!refresh);
+        } catch (err) {
+            console.error("Kullanıcı silinirken hata:", err);
+            toast.error("Kullanıcı silinirken bir hata oluştu!");
+        }
     };
 
     useEffect(() => {
@@ -50,7 +61,6 @@ const AdminDashboard = () => {
                     + Kullanıcı Ekle
                 </button>
             </div>
-
 
             {loading ? (
                 <p className="text-center text-secondary">Kullanıcılar yükleniyor...</p>
@@ -75,7 +85,10 @@ const AdminDashboard = () => {
                                     <td>{user.email}</td>
                                     <td>{user.business}</td>
                                     <td>
-                                        <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDelete(user.id)}>
+                                        <button
+                                            className="btn btn-sm btn-outline-danger me-2"
+                                            onClick={() => handleDelete(user.id)}
+                                        >
                                             Sil
                                         </button>
                                     </td>
@@ -94,10 +107,12 @@ const AdminDashboard = () => {
             )}
 
             {showModal && (
-                <CreateUserPopup onClose={() => {
-                    setShowModal(false);
-                    setRefresh(!refresh);
-                }} />
+                <CreateUserPopup
+                    onClose={() => {
+                        setShowModal(false);
+                        setRefresh(!refresh);
+                    }}
+                />
             )}
         </div>
     );

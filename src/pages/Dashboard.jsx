@@ -3,14 +3,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { motion } from "framer-motion";
 import CreateMenuPopup from "../components/popups/CreateMenuPopup.jsx";
 import AdminNavbar from "../components/AdminNavbar.jsx";
-import {DeleteMenuRequest, GetCompanyMenusRequest} from "../api/MenuApi.js"; // 👈 API fonksiyonunu import et
+import {DeleteMenuRequest, GetCompanyMenusRequest} from "../api/MenuApi.js";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
     const [menus, setMenus] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [refreh, setRefreh] = useState(false);
-
 
     const fetchMenus = async () => {
         try {
@@ -31,17 +31,25 @@ export default function Dashboard() {
     }, [refreh]);
 
     const handleMenuClick = (menu) => {
-        console.log("Seçilen Menü:", menu);
         window.location.href = `/menu-content/${menu.id}`;
     };
 
     const handleDelete = async (id) => {
-        await DeleteMenuRequest(id);
-        setRefreh(!refreh);
+        const confirmDelete = window.confirm("Bu menüyü silmek istediğinize emin misiniz?");
+        if (!confirmDelete) return;
+
+        try {
+            await DeleteMenuRequest(id);
+            toast.success("Menü başarıyla silindi!");
+            setRefreh(!refreh);
+        } catch (err) {
+            console.error("Menü silinirken hata:", err);
+            toast.error("Menü silinirken bir hata oluştu!");
+        }
     };
 
     return (
-        <div className="min-vh-100 bg-dark text-light">
+        <div className="min-vh-100 overflow-hidden bg-dark text-light">
             <AdminNavbar />
 
             <div className="container py-5">
