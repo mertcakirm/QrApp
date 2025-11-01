@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AdminNavbar from "../components/AdminNavbar.jsx";
-import { UsersGetAllRequest } from "../api/UserApi.js";
+import {DeleteUserRequest, UsersGetAllRequest} from "../api/UserApi.js";
 import CreateUserPopup from "../components/popups/CreateUserPopup.jsx"; // 👈 API fonksiyonunu import et
 
 const AdminDashboard = () => {
@@ -29,17 +29,14 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        await DeleteUserRequest(id);
+        setRefresh(!refresh);
+    };
+
     useEffect(() => {
         fetchUsers();
     }, [refresh]);
-
-
-
-    const handleDelete = (id) => {
-        if (window.confirm("Bu kullanıcıyı silmek istediğinize emin misiniz?")) {
-            setUsers(users.filter((user) => user.id !== id));
-        }
-    };
 
     return (
         <div className="container-fluid p-0 px-5 m-0 overflow-hidden text-light bg-dark vh-100">
@@ -81,7 +78,6 @@ const AdminDashboard = () => {
                                         <button className="btn btn-sm btn-outline-danger me-2" onClick={() => handleDelete(user.id)}>
                                             Sil
                                         </button>
-                                        <button className="btn btn-sm btn-outline-light">Düzenle</button>
                                     </td>
                                 </tr>
                             ))

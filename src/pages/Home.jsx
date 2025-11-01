@@ -13,11 +13,11 @@ export default function Home() {
     // Sayaç animasyonu
     useEffect(() => {
         let userInterval = setInterval(() => {
-            setUsers((prev) => (prev < 4500 ? prev + 50 : prev));
+            setUsers((prev) => (prev < 1500 ? prev + 50 : prev));
         }, 20);
 
         let menuInterval = setInterval(() => {
-            setMenus((prev) => (prev < 820 ? prev + 10 : prev));
+            setMenus((prev) => (prev < 1550 ? prev + 10 : prev));
         }, 30);
 
         let qrInterval = setInterval(() => {

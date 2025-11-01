@@ -10,13 +10,15 @@ export default function MenuContents() {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
+    const [title, setTitle] = useState("");
     const { id } = useParams();
 
     const fetchMenuItems = async () => {
         try {
             setLoading(true);
             const res = await GetMenuItemsRequest(id);
-            setContents(res.data);
+            setTitle(res.data.name);
+            setContents(res.data.items);
         } catch (error) {
             console.error("Menü içerikleri alınamadı:", error);
         } finally {
@@ -40,7 +42,7 @@ export default function MenuContents() {
             <AdminNavbar />
             <div className="container py-5">
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="text-light">Menü İçerikleri</h2>
+                    <h2 className="text-light">{title} Menü İçerikleri</h2>
                     <button className="btn btn-primary" onClick={() => setShowModal(true)}>
                         Yeni İçerik Ekle
                     </button>
@@ -55,7 +57,7 @@ export default function MenuContents() {
                     <p className="text-center text-muted">Henüz menü içeriği bulunmuyor.</p>
                 ) : (
                     <div className="row g-4">
-                        {contents.map((c, i) => (
+                        {contents.map((c) => (
                             <div key={c.id} className="col-md-4">
                                 <div className="card bg-secondary text-center text-light overflow-hidden rounded-4 shadow position-relative">
                                     {c.base64Image && (

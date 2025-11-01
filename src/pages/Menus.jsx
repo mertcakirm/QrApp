@@ -6,6 +6,7 @@ import { GetMenusByCompanyName } from "../api/MenuApi.js";
 
 export default function Menus() {
     const [menus, setMenus] = useState([]);
+    const [companyInfo, setCompanyInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const { name } = useParams();
 
@@ -16,7 +17,15 @@ export default function Menus() {
             setLoading(true);
             try {
                 const response = await GetMenusByCompanyName(decodedName);
-                setMenus(response.data);
+
+                setMenus(response.data.items || []);
+                setCompanyInfo({
+                    name: response.data.companyName,
+                    phone: response.data.companyPhone,
+                    email: response.data.companyEmail,
+                    address: response.data.companyAddress
+                });
+
             } catch (err) {
                 console.error("Menüler çekilirken hata:", err);
             } finally {
@@ -41,7 +50,8 @@ export default function Menus() {
         <div className="min-vh-100 bg-dark text-light py-5">
             <div className="container">
                 <h2 className="mb-5 text-center">{decodedName}</h2>
-                <div className="row g-4">
+
+                <div className="row w-100 g-4 mb-5">
                     {menus.length > 0 ? (
                         menus.map((menu) => (
                             <div key={menu.id} className="col-sm-6 col-md-4 col-lg-3 d-flex justify-content-center align-items-center">
@@ -68,6 +78,28 @@ export default function Menus() {
                         </div>
                     )}
                 </div>
+
+                {companyInfo && (
+                    <div className="d-flex flex-column gap-2 bg-secondary bg-opacity-25 p-4 mt-5 rounded-4 text-light text-center">
+                        <h4 className="mb-3">İletişim Bilgileri</h4>
+                        <p>
+                            📞 <a href={`tel:${companyInfo.phone}`} className="text-light text-decoration-none">{companyInfo.phone}</a>
+                        </p>
+                        <p>
+                            ✉️ <a href={`mailto:${companyInfo.email}`} className="text-light text-decoration-none">{companyInfo.email}</a>
+                        </p>
+                        <p>
+                            📍 <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(companyInfo.address)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-light text-decoration-none"
+                        >
+                            {companyInfo.address}
+                        </a>
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );

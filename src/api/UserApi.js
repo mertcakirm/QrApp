@@ -11,3 +11,7 @@ export const UsersGetAllRequest = async () => {
 export const AddUserRequest = async (user) => {
     return await api.post("/users", user)
 }
+
+export const DeleteUserRequest = async (id) => {
+    return await api.delete(`/users/${id}`);
+}

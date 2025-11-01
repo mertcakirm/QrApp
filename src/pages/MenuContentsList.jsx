@@ -8,14 +8,17 @@ import {GetMenuItemsRequest} from "../api/MenuApi.js";
 export default function MenuContentsList() {
     const [contents, setContents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [background, setBackground] = useState("");
+    const [title, setTitle] = useState("");
     const navigate = useNavigate();
     const { id } = useParams();
 
     const fetchContents = async () => {
         try {
-            console.log(id)
             const response = await GetMenuItemsRequest(id);
-            setContents(response.data);
+            setBackground(response.data.base64Image);
+            setTitle(response.data.name);
+            setContents(response.data.items);
         } catch (error) {
             console.error("Menü içerikleri alınamadı:", error);
         } finally {
@@ -44,7 +47,7 @@ export default function MenuContentsList() {
     return (
         <div className="position-relative min-vh-100 text-light py-5">
             <img
-                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?fit=crop&w=1920&h=1080"
+                src={background}
                 alt="Arkaplan"
                 className="menu-bg-img"
             />
@@ -58,37 +61,41 @@ export default function MenuContentsList() {
             </button>
 
             <div className="container position-relative">
-                <h2 className="mb-5 mt-3 text-center">Menü İçerikleri</h2>
+                <h2 className="mb-5 mt-3 text-center">{title.toUpperCase()}</h2>
                 <div className="row g-4">
-                    {contents.map((content) => (
-                        <div key={content.id} className="col-sm-6 col-md-4 col-lg-3">
-                            <div className="card content-card shadow-lg overflow-hidden rounded-4 bg-dark bg-opacity-75 text-light">
-                                {content.base64Image && (
-                                    <img
-                                        src={content.base64Image}
-                                        alt={content.name}
-                                        className="card-img-top"
-                                        style={{ height: "150px", objectFit: "cover" }}
-                                    />
-                                )}
-                                <div className="card-body d-flex flex-column" style={{ height: "200px", overflowY: "auto" }}>
-                                    <h5 className="card-title">{content.name}</h5>
-                                    <p className="card-text">{content.description}</p>
-                                    <ul className="list-group list-group-flush mt-auto">
-                                        {content.variants.map((v) => (
-                                            <li
-                                                key={v.id}
-                                                className="list-group-item bg-dark bg-opacity-50 text-light d-flex justify-content-between align-items-center p-2"
-                                            >
-                                                {v.name}
-                                                <span>{v.price}₺</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                    {contents.length > 0 ? (
+                        contents.map((content) => (
+                            <div key={content.id} className="col-sm-6 col-md-4 col-lg-3">
+                                <div className="card content-card shadow-lg overflow-hidden rounded-4 bg-dark bg-opacity-75 text-light">
+                                    {content.base64Image && (
+                                        <img
+                                            src={content.base64Image}
+                                            alt={content.name}
+                                            className="card-img-top"
+                                            style={{ height: "150px", objectFit: "cover" }}
+                                        />
+                                    )}
+                                    <div className="card-body d-flex flex-column" style={{ height: "200px", overflowY: "auto" }}>
+                                        <h5 className="card-title">{content.name}</h5>
+                                        <p className="card-text">{content.description}</p>
+                                        <ul className="list-group list-group-flush mt-auto">
+                                            {content.variants.map((v) => (
+                                                <li
+                                                    key={v.id}
+                                                    className="list-group-item bg-dark bg-opacity-50 text-light d-flex justify-content-between align-items-center p-2"
+                                                >
+                                                    {v.name}
+                                                    <span>{v.price}₺</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-light text-center mt-5">Henüz içerik bulunmuyor.</p>
+                    )}
                 </div>
             </div>
         </div>
